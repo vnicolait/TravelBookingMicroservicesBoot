@@ -1,0 +1,15 @@
+package com.inicio;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.repository.TestRepository;
+
+@SpringBootTest(classes= TestRepository.class)
+class MicroserviceFlightApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}

@@ -1,0 +1,138 @@
+package service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import booking.dto.BookingDTO;
+import booking.dto.BookingMapper;
+import booking.dto.BookingRequestFlightDTO;
+import booking.dto.BookingRequestHotelDTO;
+import booking.dto.DetailsDTO;
+import entities.BookingEntity;
+import entities.BookingEntity.MethodPay;
+import entities.BookingEntity.StatusBooking;
+import entities.BookingEntity.TypeBooking;
+import entities.DetailsEntity;
+import exceptions.FieldsCannotBeNullException;
+import exceptions.FlightNotFoundException;
+import exceptions.InvalidDateRangeException;
+import exceptions.UnAvailableCapacity;
+import external.ExternalFlightClient;
+import external.ExternalHotelClient;
+import external.dto.FlightRequestDTO;
+import external.dto.FlightResponseDTO;
+import external.dto.HotelRequestDTO;
+import external.dto.HotelResponseDTO;
+import repository.BookingJpaRepository;
+
+@Service
+public class BookingServiceImpl implements BookingService {
+
+	@Autowired
+	ExternalFlightClient external;
+	@Autowired
+	BookingJpaRepository repository;
+	@Autowired
+	BookingMapper mapper;
+	@Autowired
+	ExternalHotelClient externalHotel;
+	
+	@Override
+	public List<FlightResponseDTO> listFlightResponse(FlightRequestDTO dto) {
+	    if(dto.getOrigin()==null || dto.getDestination()==null) {
+	    	throw new FieldsCannotBeNullException("origin or destination cannot be null");
+	    }
+	    if(dto.getStartDate().isAfter(dto.getEndDate())) {
+	    	throw new  InvalidDateRangeException("Start date cannot be after end date");
+	    }
+		return external.listFlightAvailable(dto);
+	}
+
+	@Override
+	@Transactional
+	public BookingDTO createBookingForFlight(BookingRequestFlightDTO bookingRequestDTO) {
+		// User has 10 minutes to reserve
+	    FlightResponseDTO responseFlightExternal= external.flightAvailableExternalBlock(bookingRequestDTO.getCodeReserve(),
+	    		                        bookingRequestDTO.getNumberPlaces()  );
+	     if(responseFlightExternal==null) {
+	    	 throw new FlightNotFoundException("Not found seat by "+bookingRequestDTO.getCodeReserve());
+	     }
+	     if(responseFlightExternal.getAvailableSeats()<bookingRequestDTO.getNumberPlaces()) {
+	    	 throw new UnAvailableCapacity("Not capacity seats "+bookingRequestDTO.getCodeReserve());
+	     }
+	     	    
+	  // Crear el DTO de reserva
+	     BookingDTO dto = new BookingDTO();
+	     dto.setIdUser(bookingRequestDTO.getIdUser());
+	     dto.setTypeBooking(TypeBooking.VUELO);
+	     dto.setBookingDate(LocalDateTime.now());
+	     dto.setStatus(StatusBooking.CONFIRMADA);
+	     MethodPay methodPay = bookingRequestDTO.getMethodPay();
+	     dto.setMethodPay(methodPay.name());
+	     dto.setAmountTotal(BigDecimal.valueOf(bookingRequestDTO.getNumberPlaces()).multiply(responseFlightExternal.getPrice()));
+
+	     // Crear detalles de la reserva
+	     DetailsDTO detailDTO = new DetailsDTO();
+	     detailDTO.setIdFlight(bookingRequestDTO.getCodeReserve());
+	     detailDTO.setQuantity(bookingRequestDTO.getNumberPlaces());
+	     detailDTO.setAmount(BigDecimal.valueOf(bookingRequestDTO.getNumberPlaces()).multiply(responseFlightExternal.getPrice()));
+
+	  // Añadir detalles al DTO de la reserva
+	     dto.setDetails(new ArrayList<>());
+	     dto.getDetails().add(detailDTO);
+
+	     // Convertir el DTO a la entidad y asignar los detalles a la entidad de la reserva
+	     BookingEntity bookingEntity = mapper.toEntity(dto);
+	     
+	     // Asignar el idReserva a los detalles en la entidad antes de guardar la entidad principal
+	     for (DetailsEntity detailEntity : bookingEntity.getDetails()) {
+	         detailEntity.setBooking(bookingEntity); // Relación inversa: asignar BookingEntity a DetailsEntity
+	     }
+
+	     // Guardar la reserva con sus detalles (CascadeType.ALL manejará la persistencia de los detalles)
+	     repository.save(bookingEntity);
+	     // Actualizar el número de asientos disponibles en el sistema externo
+	     external.flightUpdateSeatExternal(bookingRequestDTO.getCodeReserve(), bookingRequestDTO.getNumberPlaces());
+
+	     return dto;
+}
+
+	// Hotel
+	
+	@Override
+	public List<HotelResponseDTO> listHotelResponse(HotelRequestDTO dto) {
+		validate(dto);
+		if(dto.getDestination()==null) {
+	    	throw new FieldsCannotBeNullException("destination cannot be null");
+		}	
+		return externalHotel.listAvailableHotels(dto);
+	}	
+	
+	private void validate(HotelRequestDTO dto) {
+		if(dto.getFrom()==null || dto.getTo()==null) {
+			//Excepciones personalizadas
+	        throw new InvalidDateRangeException("Start and End dates cannot be null.");
+
+		}		
+		if(dto.getFrom().isAfter(dto.getTo())) {
+	        throw new InvalidDateRangeException("Start date cannot be after End date");
+
+		}
+		
+	}
+	
+	//Validaciones de hotel y fechas
+	//Compruebo que el hotel existe y tiene disponibilidad
+	
+	public BookingDTO createBookingForHotel(BookingRequestHotelDTO bookingRequestDTO) {
+	
+		
+		return null;
+	}
+}

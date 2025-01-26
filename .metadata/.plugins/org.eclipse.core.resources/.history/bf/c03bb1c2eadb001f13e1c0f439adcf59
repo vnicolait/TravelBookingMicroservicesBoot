@@ -1,0 +1,18 @@
+package com.service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import dto.RoomRentRequestDTO;
+
+
+public interface OccupationService {
+
+	void saveRentRoomOccupation(int idHotel, int idRoom, LocalDate startRent, LocalDate endRent);
+
+	void rentRoomOfHotelCurrent(RoomRentRequestDTO dto);
+	
+	void confirmReservationRoom(int idRoom);
+	
+	boolean releaseExpiredBlocks();
+}

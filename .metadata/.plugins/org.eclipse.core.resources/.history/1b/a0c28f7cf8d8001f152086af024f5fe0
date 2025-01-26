@@ -1,0 +1,9 @@
+-- Insertar vuelos de ejemplo con datos iniciales para blocked_seats y block_expiration
+INSERT INTO vuelos (id_vuelo, company, origen, destino, fecha_hora_salida, fecha_hora_llegada, precio, asientos_disponibles, blocked_seats, block_expiration)
+VALUES (1, 'Iberia', 'Madrid', 'Barcelona', '2025-02-01 08:00:00', '2025-02-01 09:30:00', 120.50, 50, 5, '2025-02-01 07:50:00');
+
+INSERT INTO vuelos (id_vuelo, company, origen, destino, fecha_hora_salida, fecha_hora_llegada, precio, asientos_disponibles, blocked_seats, block_expiration)
+VALUES (2, 'Vueling', 'Madrid', 'Sevilla', '2025-02-02 10:00:00', '2025-02-02 11:30:00', 95.75, 60, 0, NULL);
+
+INSERT INTO vuelos (id_vuelo, company, origen, destino, fecha_hora_salida, fecha_hora_llegada, precio, asientos_disponibles, blocked_seats, block_expiration)
+VALUES (3, 'Air Europa', 'Barcelona', 'Valencia', '2025-02-03 12:00:00', '2025-02-03 13:00:00', 80.00, 40, 10, '2025-02-03 11:50:00');

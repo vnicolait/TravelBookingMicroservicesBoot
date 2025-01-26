@@ -1,0 +1,42 @@
+package com.repository;
+
+
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+import com.model.FlightEntity;
+
+public interface FlightEntityJpaRepository extends JpaRepository<FlightEntity, Integer> {
+	@Query("SELECT f FROM FlightEntity f WHERE f.origin = ?1 AND f.destination = ?2 " +
+		       "AND ?3<=f.dateTimeDeparture " +
+		       "AND ?4>=f.dateTimeArrival " +
+		       "AND f.availableSeats > 0")
+		List<FlightEntity> listFlightAvailable(String origin, String destination,
+		                                       LocalDateTime startDate, LocalDateTime endDate);
+
+
+	@Query("SELECT f FROM FlightEntity f join f.itineraries i WHERE f.origin = ?1 AND f.destination = ?2 " +
+		       "AND ?3<=f.dateTimeDeparture " +
+		       "AND ?4>=f.dateTimeArrival " +
+		       "AND f.availableSeats > 0 GROUP BY f.idFlight HAVING COUNT(i.idItineraries)=1")
+		List<FlightEntity> listFlightAvailableDirect(String origin, String destination,
+		                                       LocalDateTime startDate, LocalDateTime endDate);
+
+/*
+ * @Query("SELECT f FROM FlightEntity f WHERE f.origin = ?1 AND f.destination = ?2 " +
+       "AND ?3 <= f.dateTimeDeparture AND ?4 >= f.dateTimeArrival " +
+       "AND f.availableSeats > 0 " +
+       "AND SIZE(f.itineraries) = 1")
+  */
+ 
+	// Method for blocked while user reservation flight
+    @Modifying
+    @Query("UPDATE FlightEntity f SET f.blockedSeats = f.blockedSeats + ?2 , f.blockExpiration=?3 WHERE f.idFlight=?1 "
+			+ "AND (f.availableSeats - f.blockedSeats >= seats)")
+	int blockSeats(int idFlight, int seats, LocalDateTime expiration);
+}

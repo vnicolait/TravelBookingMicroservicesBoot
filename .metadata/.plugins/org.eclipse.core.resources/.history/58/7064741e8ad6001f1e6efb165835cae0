@@ -1,0 +1,7 @@
+package dto;
+
+
+@Mapper(componentModel = "spring")
+public interface HotelMapper {
+
+}

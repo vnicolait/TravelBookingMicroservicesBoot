@@ -1,0 +1,78 @@
+package com.repository;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.inicio.MicroserviceFlightApplication;
+import com.model.FlightEntity;
+
+@Configuration
+@SpringBootTest(classes = MicroserviceFlightApplication.class)  // Esta anotación carga el contexto completo de Spring Boot para la prueba
+@Transactional
+public class TestRepository {
+
+	@Autowired
+    private FlightEntityJpaRepository flightRepository;
+
+	 @Test
+	 public void testBlockSeats() {
+		// Crear vuelo
+		    FlightEntity flight = new FlightEntity();
+		    flight.setAvailableSeats(100);
+		    flight.setBlockedSeats(0);
+		    flight.setCompany("Test Airline");
+		    flight.setOrigin("Madrid");
+		    flight.setDestination("Barcelona");
+		    flight.setDateTimeDeparture(LocalDateTime.of(2025, 2, 1, 10, 0));
+		    flight.setDateTimeArrival(LocalDateTime.of(2025, 2, 1, 12, 0));
+		    flightRepository.save(flight);
+
+		    // Verifica los valores iniciales
+		    FlightEntity savedFlight = flightRepository.findById(flight.getIdFlight()).get();
+		    System.out.println("Initial Flight: " + savedFlight);
+		    assertEquals(100, savedFlight.getAvailableSeats());
+		    assertEquals(0, savedFlight.getBlockedSeats());
+
+		    // Ejecutar blockSeats
+		    LocalDateTime expiration = LocalDateTime.now().plusHours(2);
+		    int updatedRows = flightRepository.blockSeats(savedFlight.getIdFlight(), 10, expiration);
+
+		    // Verifica si se aplicaron los cambios
+		    FlightEntity updatedFlight = flightRepository.findById(flight.getIdFlight()).get();
+		    System.out.println("Updated Flight: " + updatedFlight);
+		    assertEquals(10, updatedFlight.getBlockedSeats());
+		    assertEquals(90, updatedFlight.getAvailableSeats() - updatedFlight.getBlockedSeats());
+	    }
+	 @Test
+	 public void testReleaseExpiredBlocks() {
+		 // Crear vuelo con bloques expirados
+		    FlightEntity flight = new FlightEntity();
+		    flight.setAvailableSeats(100);
+		    flight.setBlockedSeats(10);
+		    flight.setBlockExpiration(LocalDateTime.now().minusHours(1)); // Bloqueo expirado
+		    flightRepository.save(flight);
+
+		    // Verifica los valores iniciales
+		    FlightEntity savedFlight = flightRepository.findById(flight.getIdFlight()).get();
+		    assertEquals(10, savedFlight.getBlockedSeats());
+		    assertTrue(savedFlight.getBlockExpiration().isBefore(LocalDateTime.now()));
+
+		    // Ejecutar releaseExpiredBlocks
+		    int updatedRows = flightRepository.releaseExpiredBlocks(savedFlight.getIdFlight(), 10, LocalDateTime.now());
+
+		    // Verifica si se liberaron los bloques
+		    FlightEntity updatedFlight = flightRepository.findById(flight.getIdFlight()).get();
+		    assertEquals(0, updatedFlight.getBlockedSeats());
+	 }
+
+}

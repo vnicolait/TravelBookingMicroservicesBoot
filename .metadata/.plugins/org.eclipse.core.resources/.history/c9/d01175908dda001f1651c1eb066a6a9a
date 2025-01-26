@@ -1,0 +1,104 @@
+package com.domain;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="habitaciones")
+public class RoomEntity {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="id_habitacion")
+    private int idRoom;
+  
+	@Enumerated(EnumType.STRING) // Se añade esta anotación
+    @Column(name="tipo")
+    private Type type;
+	@Column(name="precio_por_noche")
+    private BigDecimal priceByNight;
+	@Column(name="descripcion")
+    private String description;
+	@JsonBackReference
+	@ManyToOne
+	@JoinColumn(name="id_hotel", referencedColumnName="id_hotel")
+	private HotelEntity hotel;
+	
+    @JsonManagedReference
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+	private List<OccupationEntity> occupations;
+	
+	public enum Type {
+		SIMPLE,
+		DOBLE,
+		SUITE
+	}
+
+	public RoomEntity(){}
+
+	public int getIdRoom() {
+		return idRoom;
+	}
+
+	public void setIdRoom(int idRoom) {
+		this.idRoom = idRoom;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public BigDecimal getPriceByNight() {
+		return priceByNight;
+	}
+
+	public void setPriceByNight(BigDecimal priceByNight) {
+		this.priceByNight = priceByNight;
+	}
+
+	public boolean isDisponibility() {
+		return disponibility;
+	}
+
+	public void setDisponibility(boolean disponibility) {
+		this.disponibility = disponibility;
+	}
+
+	public HotelEntity getHotel() {
+		return hotel;
+	}
+
+	public void setHotel(HotelEntity hotel) {
+		this.hotel = hotel;
+	}
+
+	public List<OccupationEntity> getOccupations() {
+		return occupations;
+	}
+
+	public void setOccupations(List<OccupationEntity> occupations) {
+		this.occupations = occupations;
+	}
+	
+	
+}

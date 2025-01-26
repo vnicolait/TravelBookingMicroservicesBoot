@@ -1,0 +1,12 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: microservice_flight
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: admin
+    url: jdbc:postgresql://localhost:5432/vuelos
+    username: admin
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect

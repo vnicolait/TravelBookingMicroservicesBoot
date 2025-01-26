@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+    <typeInfo handle="=microservice_hotel/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.service{OccupationService.java[OccupationService" modifiers="513" timestamp="1737898686448"/>
+    <typeInfo handle="=microservice_hotel/C:\/Users\/wnico\/.m2\/repository\/org\/springframework\/data\/spring-data-jpa\/3.4.1\/spring-data-jpa-3.4.1.jar=/maven.pomderived=/true=/=/maven.groupId=/org.springframework.data=/=/maven.artifactId=/spring-data-jpa=/=/maven.version=/3.4.1=/=/maven.scope=/compile=/=/maven.pomderived=/true=/&lt;org.springframework.data.jpa.repository(JpaRepository.class[JpaRepository" modifiers="1537" timestamp="1735633761671"/>
+    <typeInfo handle="=microservice_reservation/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;service{BookingService.java[BookingService" modifiers="513" timestamp="1737317558614"/>
+</typeInfoHistroy>
