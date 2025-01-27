@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import entities.BookingEntity.MethodPay;
 import entities.BookingEntity.StatusBooking;
 import entities.BookingEntity.TypeBooking;
@@ -16,6 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_DEFAULT) // Excluir valores predeterminados (como 0)
 public class BookingDTO {
 	
 	private int idBooking;
@@ -26,4 +29,6 @@ public class BookingDTO {
     private String methodPay;
     private BigDecimal amountTotal;
     private List<DetailsDTO> details; 
+    //field added for response to microservice hotel
+    private int idOccupation;
 }

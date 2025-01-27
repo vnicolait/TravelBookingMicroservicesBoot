@@ -153,7 +153,9 @@ public class BookingServiceImpl implements BookingService {
 	     MethodPay methodPay = bookingRequestDTO.getMethodPay();
 	     dto.setMethodPay(methodPay.name());
 	     dto.setAmountTotal(BigDecimal.valueOf(bookingRequestDTO.getNumberPlaces()).multiply(responseHotel.getPriceByNight()));
-
+        
+	     dto.setIdOccupation(responseHotel.getIdOccupation());
+	     
 	     // Crear detalles de la reserva
 	     DetailsDTO detailDTO = new DetailsDTO();
 	     detailDTO.setIdHotel(bookingRequestDTO.getIdHotel());
@@ -175,7 +177,7 @@ public class BookingServiceImpl implements BookingService {
 	     
 	     
 	     // Resolver la respuesta necesito idOcupacion para confirmar
-	        return null;
+	        return dto;
 	}
 	
 	// Implements Method Confirm Booking but before ask 
