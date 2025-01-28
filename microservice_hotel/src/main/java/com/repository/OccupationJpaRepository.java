@@ -35,9 +35,9 @@ public interface OccupationJpaRepository extends JpaRepository<OccupationEntity,
                          @Param("to") LocalDateTime to,
                          @Param("quantity") int quantity);
     
-    @Transactional
     @Modifying
-    @Query(value="UPDATE ocupaciones SET estado='RESERVADO' WHERE id_ocupacion=?",nativeQuery=true)
+    @Transactional
+    @Query("UPDATE OccupationEntity o SET o.stateRoom = 'RESERVADO' WHERE o.idOccupation = ?1")
     void confirmReservationRoom(int idOccupation);
     
     @Transactional

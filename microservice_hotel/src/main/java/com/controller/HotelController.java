@@ -84,9 +84,9 @@ public class HotelController {
 	}
 	
 //	@PostMapping(value="hotel/{idOccupation}") better for change state PUT
-	@PutMapping(value="ocupaciones/{idOccupation}/confirmar")
+	@PutMapping(value="ocupaciones/confirmar/{idOccupation}")
     public ResponseEntity<String> confirmReservation(@PathVariable("idOccupation") int idOccupation) {
-	    return ResponseEntity.ok().build();  // Retorna código HTTP 200 OK si todo es correcto
-
-}
+		occupationService.confirmReservationRoom(idOccupation);
+		return ResponseEntity.ok().build();  // Retorna código HTTP 200 OK si todo es correcto
+    }
 }

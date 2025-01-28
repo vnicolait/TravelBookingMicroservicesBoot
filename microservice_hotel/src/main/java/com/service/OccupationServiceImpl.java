@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.apache.catalina.startup.ClassLoaderFactory.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,18 +119,22 @@ public class OccupationServiceImpl implements OccupationService {
 	
 	//TEST ABOUT RESPONSE 200 IT'S RIGHT BECAUSE NOT CHANGE STATE WHEN EXPIRED BUT
 	// 200 NOT RIGHT
-	@Override
+	@Transactional
 	public void confirmReservationRoom(int idOccupation) {
        OccupationEntity entity=occupationRepository.findById(idOccupation).orElseThrow(()->new CodeNotExist("Hotel with ID "));
-       if (entity.getStateRoom() == StateRoom.BLOQUEADO) {
+       System.out.println("Estado actual de la habitación: " + entity);
+     if (entity.getStateRoom() == StateRoom.BLOQUEADO) {
            // Si la expiración ha pasado (es antes de ahora), lanzamos la excepción
            if (entity.getBlock_expiration().isBefore(LocalDateTime.now())) {
                System.out.println("TIME EXPIRED");
-               System.out.println("TIME EXPIRED");
+            
         	   throw new BlockExpiredException("The reservation block has expired, please start over.");
            } else {
                // Si el bloque no ha expirado, se puede confirmar
                occupationRepository.confirmReservationRoom(entity.getIdOccupation());
+//        	 System.out.println("FALLA EL CONFIRMATION>>>>>>>>");
+//        	   entity.setStateRoom(StateRoom.RESERVADO);
+        	   occupationRepository.save(entity);
            }
        } else {
            throw new IllegalArgumentException("The reservation cannot be confirmed due to invalid state.");

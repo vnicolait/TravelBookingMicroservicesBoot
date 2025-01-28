@@ -13,7 +13,7 @@ public interface OccupationService {
 
 	RoomRentResponseDTO rentRoomOfHotelCurrent(RoomRentRequestDTO dto);
 	
-	void confirmReservationRoom(int idRoom);
+	void confirmReservationRoom(int idOccupation);
 	
 	boolean releaseExpiredBlocks();
 }
