@@ -13,4 +13,5 @@ manage payments (in the future), and confirm bookings in real time.
 ## Project Status
 - **Flights Service**: Implemented
 - **Hotel Service**: Implemented
+- **User Service**:Under construction
 - **Combined Service** (Flights + Hotels): Under construction / development
