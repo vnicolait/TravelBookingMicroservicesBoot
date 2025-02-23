@@ -1,0 +1,24 @@
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.model.UserEntity;
+import com.service.UserService;
+
+@RestController
+public class UserController {
+
+	@Autowired
+	UserService service;
+	
+	@PutMapping("/{id}")
+	ResponseEntity<?> updateUser(@RequestBody UserEntity userEntity,
+			                                              @PathVariable("id")int id){
+		UserEntity entity=service.findUserByEmail(userEntity.getEmail());
+	}
+}

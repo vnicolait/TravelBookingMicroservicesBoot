@@ -1,0 +1,34 @@
+package com.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.exceptions.UserAlreadyExist;
+import com.exceptions.UserNotFound;
+import com.model.UserEntity;
+import com.service.UserService;
+
+@RestController
+public class UserController {
+
+	@Autowired
+	UserService service;
+	
+	@PutMapping("/{id}")
+	ResponseEntity<?> updateUser(@RequestBody UserEntity userEntity,
+			                                              @PathVariable("id")int id){
+       try {
+		UserEntity user=service.updateUser(userEntity, id);
+		return ResponseEntity.ok(user);
+       }catch(UserNotFound e) {
+    	   return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+       }catch(UserAlreadyExist e) {
+    	   return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+       }
+	}
+}

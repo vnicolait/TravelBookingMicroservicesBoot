@@ -1,0 +1,58 @@
+package com.service;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.exceptions.UserAlreadyExist;
+import com.model.UserEntity;
+import com.repository.UserJpaRepository;
+
+@Service
+public class UserServiceImpl implements UserService{
+    @Autowired
+	UserJpaRepository repository;
+    
+	@Override
+	public void registerUser(UserEntity entity) {
+      Optional<UserEntity> user=repository.findByEmail(entity.getEmail());
+      if(user.isPresent()) {
+    	  throw new UserAlreadyExist("user with email "+user.get().getEmail() +" already exist");
+      }
+       repository.save(user.get());
+	}
+
+	@Override
+	public void login(String email, String password) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public UserEntity findUserByEmail(String email) {
+        return repository.findByEmail(email).orElseThrow();
+	}
+
+	@Override
+	public UserEntity updateUser(UserEntity user) {
+		Optional<UserEntity> entity=repository.findByEmail(user.getEmail());
+		  if(!entity.isPresent()) {
+			  throw new UserAlreadyExist("User with email "+ user.getEmail() +" not exist");
+		  }
+		return repository.saveAndFlush(entity.get());
+	}
+
+	@Override
+	public void deleteUser(int idUser) {
+       Optional<UserEntity> user= repository.findById(idUser);
+		if(user.isPresent()) {
+			repository.delete(user.get());
+		}
+	}
+	
+	
+	
+	
+
+}

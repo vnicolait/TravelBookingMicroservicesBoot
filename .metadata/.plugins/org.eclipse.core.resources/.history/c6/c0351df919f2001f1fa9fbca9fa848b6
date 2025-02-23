@@ -1,0 +1,16 @@
+package com.service;
+
+import java.util.Optional;
+
+import com.model.UserEntity;
+
+public interface UserService {
+
+	void registerUser(UserEntity entity);
+	void login(String email, String password);
+    Optional<UserEntity> findUserByEmail(String email); // Nuevo método para buscar usuario
+    
+    UserEntity updateUser(UserEntity user, int idUser);
+    void deleteUser(int idUser);
+
+}
