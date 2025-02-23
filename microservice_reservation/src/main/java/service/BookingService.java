@@ -4,6 +4,7 @@ import java.util.List;
 
 import booking.dto.BookingDTO;
 import booking.dto.BookingRequestFlightDTO;
+import booking.dto.BookingRequestHotelDTO;
 import external.dto.FlightRequestDTO;
 import external.dto.FlightResponseDTO;
 import external.dto.HotelAvailableRequestDTO;
@@ -17,4 +18,7 @@ public interface BookingService {
 	
 	//Hotel
 	List<HotelAvailableResponseDTO> listHotelResponse(HotelAvailableRequestDTO dto);
+	
+	public BookingDTO createBookingForHotel(BookingRequestHotelDTO bookingRequestDTO);
+	public BookingDTO confirmReservation(int idOccupation, int idReserve);
 }

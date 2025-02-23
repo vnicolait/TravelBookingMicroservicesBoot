@@ -30,10 +30,18 @@ public class HotelServiceImpl implements HotelService{
 //	@Override
 	public List<HotelDTO> findAvailableHotelsWithRoomsBetweenDatesSQL(String location, LocalDate fechaInicio,
 			LocalDate fechaFin) {
+		   System.out.println(">>>>>>>>>> service " + location);
+		   System.out.println(">>>>>>>>>> service " + fechaInicio);
+		   System.out.println(">>>>>>>>>> service " + fechaFin);
+
 		List<Object[]> results= repository.findAvailableHotelsWithRoomsSQL(location, fechaInicio, fechaFin);
+	   System.out.println(">>>>>>>>>> " + results);
 		List<HotelDTO> dtos=new ArrayList<>();
 		for(Object[] row:results) {
+			
 			int idHotel=(Integer)row[0];
+			System.out.println("DTO +idHotel+ " + idHotel);
+
 			String nombre=(String)row[1];
 			String ubicacion=(String)row[2];
 			int idRoom=(Integer)row[3];

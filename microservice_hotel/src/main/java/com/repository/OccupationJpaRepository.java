@@ -28,7 +28,7 @@ public interface OccupationJpaRepository extends JpaRepository<OccupationEntity,
    // @Modifying
     @Transactional
     @Query(value="INSERT INTO ocupaciones (id_habitacion, fecha_inicio, fecha_fin, cantidad, estado, ultima_modificacion, block_expiration) VALUES "
-           + "(:idRoom, :from, :to, :quantity, 'BLOQUEADO', NOW(), NOW() + INTERVAL '10 minutes') RETURNING id_ocupacion", 
+           + "(:idRoom, :from, :to, :quantity, 'BLOQUEADO', NOW(), NOW() + INTERVAL '5 minutes') RETURNING id_ocupacion", 
            nativeQuery = true)
     int rentRoomOfHotel(@Param("idRoom") int idRoom, 
                          @Param("from") LocalDateTime from,

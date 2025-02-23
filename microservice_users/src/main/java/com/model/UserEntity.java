@@ -2,6 +2,7 @@ package com.model;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,8 +25,10 @@ import lombok.Setter;
 public class UserEntity {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="id_usuario")
 	private int idUser;
-	private String name;
+	@Column(name="nombre")
+    private String name;
 	private String email;
 	private String password;
 	private boolean enabled;

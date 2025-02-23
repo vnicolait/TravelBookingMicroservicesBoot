@@ -9,6 +9,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -31,9 +33,11 @@ public class ExternalHotelClient {
 	private String url="http://localhost:6000/hotels";
 	
 	public List<HotelAvailableResponseDTO> listAvailableHotels(HotelAvailableRequestDTO dto){
-
-		String jsonResponse = template.getForObject(url+"?location={location}&fecha_inicio={fecha_inicio}&fecha_fin={fecha_inicio}",
+        System.out.println("external");
+		String jsonResponse = template.getForObject(url+"?location={location}&fecha_inicio={fecha_inicio}&fecha_fin={fecha_fin}",
 				          String.class,dto.getDestination(),dto.getFrom(),dto.getTo());
+		System.out.println("JSON Response: " + jsonResponse);
+
 	  List<HotelAvailableResponseDTO> listHotels=new ArrayList<>();
 	     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	ObjectMapper mapper=new ObjectMapper();
@@ -79,4 +83,21 @@ public class ExternalHotelClient {
 //		                  .block(); // FlightResponseDTO
 	}
 	
+	public boolean confirmReservationExternal(int idOccupation){
+		try {
+	        ResponseEntity<Void> response = template.exchange(
+	            "http://localhost:6000/ocupaciones/confirmar/{idOccupation}",
+	            HttpMethod.PUT,
+	            null,  // No enviamos cuerpo en la solicitud PUT
+	            Void.class,
+	            idOccupation
+	        );
+
+	        return response.getStatusCode() == HttpStatus.OK;  // Devuelve true solo si fue exitoso
+
+	    } catch (Exception e) {
+	        return false;  // En caso de error, indica que la reserva no pudo confirmarse
+	    }
+	
+}
 }

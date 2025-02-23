@@ -1,0 +1,55 @@
+package com.inicio;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+AuthenticationManager auth;
+	
+	@Bean
+	public AuthenticationManager authManager(AuthenticationConfiguration conf) throws Exception{
+		auth=conf.getAuthenticationManager();
+		return auth;
+	}
+	/*
+	
+	@Bean
+	public JdbcUserDetailsManager usersDetailsJdbc() {
+		DriverManagerDataSource ds=new DriverManagerDataSource();
+		ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+		ds.setUrl("jdbc:mysql://localhost:3306/springsecurity?serverTimezone=UTC");
+		ds.setUsername("root");
+		ds.setPassword("Muj@j@0101");
+		JdbcUserDetailsManager jdbcDetails=new JdbcUserDetailsManager(ds);
+		
+		jdbcDetails.setUsersByUsernameQuery("select user, pwd, enabled"
+           	+ " from users where user=?");
+		jdbcDetails.setAuthoritiesByUsernameQuery("select user, rol "
+           	+ "from roles where user=?");
+		return jdbcDetails;
+	}
+	*/
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http)throws Exception {
+		http.csrf(cus->cus.disable())
+		  .authorizeHttpRequests(auth->
+		         auth.requestMatchers(HttpMethod.POST, "/contacto").hasRole("ADMIN")
+		         .requestMatchers(HttpMethod.DELETE, "/contacto/**").hasAnyRole("ADMIN","OPERATOR")
+		           .requestMatchers("/contactos").authenticated()
+		             .anyRequest().permitAll())
+			.addFilter(new JWTAuthorizationFilter(auth));
+		      return http.build();
+		
+	}
+//}
+
+}

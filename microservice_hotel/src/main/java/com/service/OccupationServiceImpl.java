@@ -120,28 +120,27 @@ public class OccupationServiceImpl implements OccupationService {
 	//TEST ABOUT RESPONSE 200 IT'S RIGHT BECAUSE NOT CHANGE STATE WHEN EXPIRED BUT
 	// 200 NOT RIGHT
 	@Transactional
-	public void confirmReservationRoom(int idOccupation) {
+	public boolean confirmReservationRoom(int idOccupation) {
        OccupationEntity entity=occupationRepository.findById(idOccupation).orElseThrow(()->new CodeNotExist("Hotel with ID "));
-       System.out.println("Estado actual de la habitación: " + entity);
-     if (entity.getStateRoom() == StateRoom.BLOQUEADO) {
-           // Si la expiración ha pasado (es antes de ahora), lanzamos la excepción
-           if (entity.getBlock_expiration().isBefore(LocalDateTime.now())) {
+       if (entity.getStateRoom() == StateRoom.BLOQUEADO) {
+    	   if (entity.getBlock_expiration().isBefore(LocalDateTime.now())) {
                System.out.println("TIME EXPIRED");
-            
-        	   throw new BlockExpiredException("The reservation block has expired, please start over.");
-           } else {
+               
+               throw new BlockExpiredException("The reservation block has expired, please start over.");
+    	      // return false;
+    	   } else {
                // Si el bloque no ha expirado, se puede confirmar
                occupationRepository.confirmReservationRoom(entity.getIdOccupation());
-//        	 System.out.println("FALLA EL CONFIRMATION>>>>>>>>");
-//        	   entity.setStateRoom(StateRoom.RESERVADO);
+
         	   occupationRepository.save(entity);
+        	   return true;
            }
-       } else {
-           throw new IllegalArgumentException("The reservation cannot be confirmed due to invalid state.");
+       } 
+         return false;
        }
-                             
+                   
          // return false;
-	}
+	
 
 	//@Scheduled(fixedRate = 60000) // Cada minuto
 	public boolean releaseExpiredBlocks() {

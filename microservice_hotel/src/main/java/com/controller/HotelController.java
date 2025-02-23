@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +26,7 @@ import dto.HotelDTO;
 import dto.RoomRentRequestDTO;
 import dto.RoomRentResponseDTO;
 
+@CrossOrigin(origins = "*") // Permite peticiones de cualquier origen
 @RestController
 public class HotelController {
 
@@ -47,11 +49,14 @@ public class HotelController {
 	public List<HotelDTO> listaHotelesPorFecha(@RequestParam("location")String location,
 	                       @RequestParam("fecha_inicio")String fecha_inicio, 
 	                         @RequestParam("fecha_fin")String fecha_fin){
-		    
+	       System.out.println("micro hotel controller>>>>>>>");
+    
 		 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
        LocalDate begin = LocalDate.parse(fecha_inicio, formatter);
+       System.out.println("micro hotel controller "+ begin);
        LocalDate end = LocalDate.parse(fecha_fin, formatter);
-         return service.findAvailableHotelsWithRoomsBetweenDatesSQL(location, begin, end);
+       System.out.println("micro hotel controller "+ end);
+     return service.findAvailableHotelsWithRoomsBetweenDatesSQL(location, begin, end);
 	}
 	/*   Preferiblemente RequestBody para enviarse en el cuerpo
 	 *  los métodos POST suelen usarse para crear recursos, 
@@ -83,10 +88,19 @@ public class HotelController {
 	       return new ResponseEntity<RoomRentResponseDTO>(response,HttpStatus.OK);
 	}
 	
-//	@PostMapping(value="hotel/{idOccupation}") better for change state PUT
 	@PutMapping(value="ocupaciones/confirmar/{idOccupation}")
     public ResponseEntity<String> confirmReservation(@PathVariable("idOccupation") int idOccupation) {
-		occupationService.confirmReservationRoom(idOccupation);
-		return ResponseEntity.ok().build();  // Retorna código HTTP 200 OK si todo es correcto
-    }
+	    try {
+	        boolean isConfirmed = occupationService.confirmReservationRoom(idOccupation);
+	        return isConfirmed
+	                ? ResponseEntity.ok("Reservation confirmed successfully.")
+	                : ResponseEntity.badRequest().body("Reservation cannot be confirmed.");
+	    } catch (BlockExpiredException e) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                .body("The reservation block has expired. Please start over.");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body("An unexpected error occurred. Please try again.");
+	    }
+}
 }

@@ -1,5 +1,0 @@
-package booking.dto;
-
-public class BookingRequestHotelDTO {
-
-}

@@ -12,8 +12,8 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(BlockExpiredException.class)
 	public ResponseEntity<String> method1(BlockExpiredException ie){
-		return new ResponseEntity<String>(ie.getMessage(),HttpStatus.BAD_REQUEST);
-	}
+		return new ResponseEntity<String>(ie.getMessage(),HttpStatus.UNAUTHORIZED);
+	}  
 	
 //	@ExceptionHandler(InvalidDateRangeException.class)
 //	public ResponseEntity<String> method2(InvalidDateRangeException ie){

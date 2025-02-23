@@ -2,6 +2,7 @@ package com.model;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,8 +24,10 @@ public class RolesEntity {
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="id")
 	private int idRol;
 	private String rol;
+	@Column(name="descripcion")
 	private String description;
 	
 	@ManyToMany(mappedBy = "roles")	

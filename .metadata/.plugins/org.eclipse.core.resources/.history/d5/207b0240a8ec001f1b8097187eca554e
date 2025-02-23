@@ -1,0 +1,45 @@
+package com.inicio;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+
+public class SecurityConfig {
+
+//	https://medium.com/@CodeWithTech/spring-security-with-jdbcuserdetailsmanager-and-custom-userdetailsservice-a-complete-guide-248ddce0196c}
+// https://medium.com/@tarikboudaa/a-crud-application-secured-using-a-customized-spring-security-configuration-51a5a4ccda
+	@EnableWebSecurity
+	@Configuration
+	public class SpringConfig {
+		
+		AuthenticationManager auth;
+		
+		@Bean
+		public AuthenticationManager authManager(AuthenticationConfiguration conf) throws Exception{
+			auth=conf.getAuthenticationManager();
+			return auth;
+		}
+		
+		
+		@Bean
+		public JdbcUserDetailsManager usersDetailsJdbc() {
+			DriverManagerDataSource ds=new DriverManagerDataSource();
+			ds.setDriverClassName("com.mysql.cj.jdbc.Driver");
+			ds.setUrl("jdbc:mysql://localhost:3306/springsecurity?serverTimezone=UTC");
+			ds.setUsername("root");
+			ds.setPassword("Muj@j@0101");
+			JdbcUserDetailsManager jdbcDetails=new JdbcUserDetailsManager(ds);
+			
+			jdbcDetails.setUsersByUsernameQuery("select user, pwd, enabled"
+	           	+ " from users where user=?");
+			jdbcDetails.setAuthoritiesByUsernameQuery("select user, rol "
+	           	+ "from roles where user=?");
+			return jdbcDetails;
+		}
+}
+	
+}

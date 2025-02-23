@@ -6,8 +6,13 @@
 		<item key="wholeword" value="false"/>
 		<item key="incremental" value="false"/>
 		<item key="isRegEx" value="false"/>
-		<item key="selection" value="rentRoomOfHotel"/>
+		<item key="selection" value="secu"/>
 		<list key="findhistory">
+			<item value="secu"/>
+			<item value="post"/>
+			<item value="confirmReservationRoom"/>
+			<item value="createBookingForHotel"/>
+			<item value="flightAvailableExternalBlock"/>
 			<item value="rentRoomOfHotel"/>
 			<item value="numero_habitaciones"/>
 			<item value="findAvailableHotelsWithRoomsBetweenDatesSQL"/>
