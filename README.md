@@ -5,6 +5,7 @@ manage payments (in the future), and confirm bookings in real time.
 - Java 17
 - Spring Boot
 - REST API
+- Spring Security token JWT
 - PostgreSQL
 - **Eureka** (Planned for future implementation)
 - **Docker** (Planned for future implementation)
