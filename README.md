@@ -9,7 +9,7 @@ manage payments (in the future), and confirm bookings in real time.
 - PostgreSQL
 - **Eureka** (Planned for future implementation)
 - **Docker** (Planned for future implementation)
-- **JUnit** (Planned for future implementation)
+- **Testing JUnit** (Planned for future implementation)
 
 ## Project Status
 - **Flights Service**: Implemented
